@@ -11,6 +11,14 @@ db = SQLAlchemy()
 jwt = JWTManager()
 limiter = Limiter(key_func=get_remote_address)
 
+# Define grouping tags
+tags = [
+    {'name': 'POST', 'description': 'All POST operations'},
+    {'name': 'PUT', 'description': 'All PUT operations'},
+    {'name': 'GET', 'description': 'All GET operations'},
+    {'name': 'DELETE', 'description': 'All DELETE operations'},
+]
+
 # Configuration classes
 class Config:
     """Base configuration class."""
@@ -39,9 +47,12 @@ def create_app(config_class=DevelopmentConfig):
     CORS(app)
 
     # Register namespaces
-    from app.routes import notes_namespace
-    api = Api(app, version="1.0", title="SecureNoteVault API", description="API documentation for SecureNoteVault")
-    api.add_namespace(notes_namespace, path='/api/notes')
+    from app.routes import post_namespace,get_namespace,put_namespace,delete_namespace
+    api = Api(app, version="1.0", title="SecureNoteVault API", description="API documentation for SecureNoteVault", tags=tags)
+    api.add_namespace(post_namespace, path='/api/v1/notes/post')
+    api.add_namespace(get_namespace, path='/api/v1/notes/get')
+    api.add_namespace(put_namespace, path='/api/v1/notes/put')
+    api.add_namespace(delete_namespace, path='/api/v1/notes/delete')
 
     # Register error handlers
     register_error_handlers(app)
